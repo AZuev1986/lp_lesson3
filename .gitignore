@@ -1,4 +1,6 @@
 settings.py
+fff.py
 *.log
 __pycache__/
 /env/*
+referat3.txt

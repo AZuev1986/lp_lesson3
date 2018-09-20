@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 now = datetime.now()
 print(datetime.strftime(now, '%d/%m/%y %H:%M:%S.%f'))
