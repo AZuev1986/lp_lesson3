@@ -1,6 +1,5 @@
 settings.py
-fff.py
+.DS_Store
 *.log
 __pycache__/
 /env/*
-referat3.txt
