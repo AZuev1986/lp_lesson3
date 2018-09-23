@@ -1,27 +1,39 @@
 # -*- coding: utf-8 -*-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import logging
-
 import settings
+
+DICT_NUMBER = {
+    'ноль': 0,
+    'один': 1,
+    'два': 2,
+    'три': 3,
+    'четыре': 4,
+    'пять': 5,
+    'шесть': 6,
+    'семь': 7,
+    'восемь': 8,
+    'девять': 9
+}
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
-                    filename='bot-calculator.log'
+                    filename='bot-w-calculator.log'
                     )
 
 def calculator(bot, update):
-
-    user_text = update.message.text 
-    print(user_text)
-    if user_text[0] == '"' and user_text[-1] == '"' and user_text[-2] == '=':
+    user_text = str(update.message.text)
+    user_text = user_text.replace('сколько будет', '1')
+    print (user_text)
+    if user_text[0] == '"' and user_text[-1] == '"' and user_text[1] == 'сколько' and user_text[2] == 'будет':
         standard_text = user_text[1:-2]
         print(standard_text)
-        act = "*/+-"
+        act = [' умножить ', ' поделить ', ' плюс ', ' минус ']
         for i in act:
             parts = standard_text.split(i)
             try:
-                arg1 = float(parts[0])
-                arg1 = float(parts[1])
+                arg1 = float(DICT_NUMBER[parts[0]])
+                arg1 = float(DICT_NUMBER[parts[0]])
             except (ValueError, TypeError):
                 update.message.reply_text('похоже, что вы ввели данные в неверном формате, попробуйте еще раз')
                 break
@@ -48,7 +60,7 @@ def calculator(bot, update):
                 break
             elif len(parts) > 2:
                 update.message.reply_text('триал версия калькулятора работает только с двумя числами')
-    update.message.reply_text('введите математическое выражение в формате "2*1.3="')
+    update.message.reply_text('введите математическое выражение в формате "сколько будет три минус два" или "сколько будет четыре умножить на шесть"')
 
 
 def main():
