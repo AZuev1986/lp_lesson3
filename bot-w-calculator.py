@@ -15,6 +15,14 @@ DICT_NUMBER = {
     'восемь': 8,
     'девять': 9
 }
+ACTION = {
+    'умножить': '*',
+    'поделить': '/',
+    'плюс': '+',
+    'минус': '-'
+}
+TEXT1 = 'похоже, что вы ввели данные в неверном формате, попробуйте еще раз, формат - "сколько будет три минус два" или "сколько будет четыре умножить на шесть"'
+TEXT2 = 'введите математическое выражение в формате "сколько будет три минус два" или "сколько будет четыре умножить на шесть"'
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
@@ -23,44 +31,44 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
 
 def calculator(bot, update):
     user_text = str(update.message.text)
-    user_text = user_text.replace('сколько будет', '1')
+    user_text = user_text.replace('"сколько будет ', '')
+    user_text = user_text.replace('"', '')
+    user_text = user_text.replace('на ', '')
     print (user_text)
-    if user_text[0] == '"' and user_text[-1] == '"' and user_text[1] == 'сколько' and user_text[2] == 'будет':
-        standard_text = user_text[1:-2]
-        print(standard_text)
-        act = [' умножить ', ' поделить ', ' плюс ', ' минус ']
-        for i in act:
-            parts = standard_text.split(i)
-            try:
-                arg1 = float(DICT_NUMBER[parts[0]])
-                arg1 = float(DICT_NUMBER[parts[0]])
-            except (ValueError, TypeError):
-                update.message.reply_text('похоже, что вы ввели данные в неверном формате, попробуйте еще раз')
-                break
-            if len(parts) == 2:
-                if i == "*":
-                    multiplication = arg1 * arg2
-                    print(multiplication)
-                    update.message.reply_text(round(multiplication, 3))
-                elif i == "/":
-                    try:
-                        division = arg1 / arg2
-                        print(division)
-                        update.message.reply_text(round(division, 3))
-                    except ZeroDivisionError:
-                        update.message.reply_text('похоже, что вы что-то попутали на 0 не делят')
-                elif i == "+":
-                    addition = arg1 + arg2
-                    print(addition)
-                    update.message.reply_text(round(addition, 3))
-                elif i == "-":
-                    difference = arg1 - arg2
-                    print(difference)
-                    update.message.reply_text(round(difference,3))
-                break
-            elif len(parts) > 2:
-                update.message.reply_text('триал версия калькулятора работает только с двумя числами')
-    update.message.reply_text('введите математическое выражение в формате "сколько будет три минус два" или "сколько будет четыре умножить на шесть"')
+    parts_list = user_text.split()
+    print(parts_list)
+    try:
+        parts_list[0] = DICT_NUMBER[parts_list[0]]
+        parts_list[1] = ACTION[parts_list[1]]
+        parts_list[2] = DICT_NUMBER[parts_list[2]]
+    except (KeyError, IndexError):
+        return update.message.reply_text(TEXT1)
+    print(parts_list)
+    try:
+        arg1 = int(parts_list[0])
+        arg2 = int(parts_list[2])
+    except (ValueError, TypeError):
+        return update.message.reply_text(TEXT1)
+    if parts_list[1] == "*":
+        multiplication = arg1 * arg2
+        print(multiplication)
+        update.message.reply_text(round(multiplication, 3))
+    elif parts_list[1] == "/":
+        try:
+            division = arg1 / arg2
+            print(division)
+            update.message.reply_text(round(division, 3))
+        except ZeroDivisionError:
+            update.message.reply_text('похоже, что вы что-то попутали на 0 не делят')
+    elif parts_list[1] == "+":
+        addition = arg1 + arg2
+        print(addition)
+        update.message.reply_text(round(addition, 3))
+    elif parts_list[1] == "-":   
+        difference = arg1 - arg2
+        print(difference)
+        update.message.reply_text(round(difference,3))
+    update.message.reply_text(TEXT2)
 
 
 def main():
