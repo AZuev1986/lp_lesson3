@@ -3,7 +3,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import logging
 import settings
 
-DICT_NUMBER = {
+DICT_S = {
     'ноль': 0,
     'один': 1,
     'два': 2,
@@ -13,16 +13,15 @@ DICT_NUMBER = {
     'шесть': 6,
     'семь': 7,
     'восемь': 8,
-    'девять': 9
-}
-ACTION = {
+    'девять': 9,
     'умножить': '*',
     'поделить': '/',
     'плюс': '+',
-    'минус': '-'
+    'минус': '-',
+    'и': '.'
 }
-TEXT1 = 'похоже, что вы ввели данные в неверном формате, попробуйте еще раз, формат - "сколько будет три минус два" или "сколько будет четыре умножить на шесть"'
-TEXT2 = 'введите математическое выражение в формате "сколько будет три минус два" или "сколько будет четыре умножить на шесть"'
+TEXT1 = 'похоже, что вы ввели данные в неверном формате, попробуйте еще раз, формат - "сколько будет четыре умножить на шесть" или "сколько будет четыре и пять умножить на шесть и два"'
+TEXT2 = 'введите математическое выражение в формате "сколько будет четыре умножить на шесть" или "сколько будет четыре и пять умножить на шесть и два"'
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
@@ -37,39 +36,49 @@ def calculator(bot, update):
     print (user_text)
     parts_list = user_text.split()
     print(parts_list)
-    try:
-        parts_list[0] = DICT_NUMBER[parts_list[0]]
-        parts_list[1] = ACTION[parts_list[1]]
-        parts_list[2] = DICT_NUMBER[parts_list[2]]
-    except (KeyError, IndexError):
-        return update.message.reply_text(TEXT1)
+    N = len(parts_list)
+    print(N)
+    for i in range(N):
+        try:
+            parts_list[i] = str(DICT_S[parts_list[i]])
+        except KeyError:
+            return update.message.reply_text(TEXT1)
     print(parts_list)
+    res_string = ''.join(parts_list)
+    print(res_string)
+    sep = ''
+    for i in range(N):
+        if res_string[i] == '*' or res_string[i] == '+'or res_string[i] == '-'or res_string[i] == '/':
+            sep = res_string[i]
+            break
+    print(sep)
+    res_list = res_string.split(sep)
+    print(res_list)
     try:
-        arg1 = int(parts_list[0])
-        arg2 = int(parts_list[2])
+        arg1 = float(res_list[0])
+        arg2 = float(res_list[1])
     except (ValueError, TypeError):
         return update.message.reply_text(TEXT1)
-    if parts_list[1] == "*":
+    if sep == "*":
         multiplication = arg1 * arg2
         print(multiplication)
         update.message.reply_text(round(multiplication, 3))
-    elif parts_list[1] == "/":
+    elif sep == "/":
         try:
             division = arg1 / arg2
             print(division)
             update.message.reply_text(round(division, 3))
         except ZeroDivisionError:
             update.message.reply_text('похоже, что вы что-то попутали на 0 не делят')
-    elif parts_list[1] == "+":
+    elif sep == "+":
         addition = arg1 + arg2
         print(addition)
         update.message.reply_text(round(addition, 3))
-    elif parts_list[1] == "-":   
+    elif sep == "-":   
         difference = arg1 - arg2
         print(difference)
         update.message.reply_text(round(difference,3))
     update.message.reply_text(TEXT2)
-
 
 def main():
     mybot = Updater(settings.API_KEY, request_kwargs=settings.PROXY1)
